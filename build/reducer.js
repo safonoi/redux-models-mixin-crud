@@ -51,6 +51,9 @@ function createReducer(model, _ref) {
       UPDATE_BY_ID_START = _ref.UPDATE_BY_ID_START,
       UPDATE_BY_ID_SUCCESS = _ref.UPDATE_BY_ID_SUCCESS,
       UPDATE_BY_ID_ERROR = _ref.UPDATE_BY_ID_ERROR,
+      PATCH_BY_ID_START = _ref.PATCH_BY_ID_START,
+      PATCH_BY_ID_SUCCESS = _ref.PATCH_BY_ID_SUCCESS,
+      PATCH_BY_ID_ERROR = _ref.PATCH_BY_ID_ERROR,
       DELETE_BY_ID = _ref.DELETE_BY_ID,
       DELETE_BY_ID_SUCCESS = _ref.DELETE_BY_ID_SUCCESS,
       DELETE_BY_ID_ERROR = _ref.DELETE_BY_ID_ERROR,
@@ -78,7 +81,6 @@ function createReducer(model, _ref) {
   var collectionInitialState = {
     requesting: false,
     params: {},
-    key: {},
     ids: [],
     error: null
   };
@@ -101,7 +103,7 @@ function createReducer(model, _ref) {
     var id = null;
 
     if (action.payload && action.payload[0] && action.payload[0].id) {
-      // byId methods (FIND_BY_ID, UPDATE_BY_ID, DELETE_BY_ID)
+      // byId methods (FIND_BY_ID, UPDATE_BY_ID, PATCH_BY_ID, DELETE_BY_ID)
       id = action.payload[0].id;
     } else if (action.meta && action.meta.id) {
       // try to find id in response
@@ -125,6 +127,7 @@ function createReducer(model, _ref) {
 
       case FIND_BY_ID_START:
       case UPDATE_BY_ID_START:
+      case PATCH_BY_ID_START:
         return _extends({}, state, _defineProperty({}, id, _extends({}, state[id] || byIdDocumentInitialState, {
           requesting: true
         })));
@@ -132,6 +135,7 @@ function createReducer(model, _ref) {
       case CREATE_SUCCESS:
       case FIND_BY_ID_SUCCESS:
       case UPDATE_BY_ID_SUCCESS:
+      case PATCH_BY_ID_SUCCESS:
         return _extends({}, state, _defineProperty({}, id, _extends({}, state[id] || byIdDocumentInitialState, {
           requesting: false,
           requested: true,
@@ -259,6 +263,13 @@ function createReducer(model, _ref) {
       case UPDATE_BY_ID_START:
       case UPDATE_BY_ID_SUCCESS:
       case UPDATE_BY_ID_ERROR:
+        return _extends({}, state, {
+          byId: byIdReducer(state.byId, action)
+        });
+
+      case PATCH_BY_ID_START:
+      case PATCH_BY_ID_SUCCESS:
+      case PATCH_BY_ID_ERROR:
         return _extends({}, state, {
           byId: byIdReducer(state.byId, action)
         });

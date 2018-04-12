@@ -30,6 +30,7 @@ import isEqual from 'lodash/isEqual';
  */
 export default function createReducer(model, { CREATE_SUCCESS,
   UPDATE_BY_ID_START, UPDATE_BY_ID_SUCCESS, UPDATE_BY_ID_ERROR,
+  PATCH_BY_ID_START, PATCH_BY_ID_SUCCESS, PATCH_BY_ID_ERROR,
   DELETE_BY_ID, DELETE_BY_ID_SUCCESS, DELETE_BY_ID_ERROR,
   FIND_START, FIND_SUCCESS, FIND_ERROR,
   FIND_BY_ID_START, FIND_BY_ID_SUCCESS, FIND_BY_ID_ERROR }
@@ -70,7 +71,7 @@ export default function createReducer(model, { CREATE_SUCCESS,
     let id = null;
 
     if (action.payload && action.payload[0] && action.payload[0].id) {
-      // byId methods (FIND_BY_ID, UPDATE_BY_ID, DELETE_BY_ID)
+      // byId methods (FIND_BY_ID, UPDATE_BY_ID, PATCH_BY_ID, DELETE_BY_ID)
       id = action.payload[0].id;
     } else if (action.meta && action.meta.id) {
       // try to find id in response
@@ -98,6 +99,7 @@ export default function createReducer(model, { CREATE_SUCCESS,
 
       case FIND_BY_ID_START:
       case UPDATE_BY_ID_START:
+      case PATCH_BY_ID_START:
         return {
           ...state,
           [id]: {
@@ -109,6 +111,7 @@ export default function createReducer(model, { CREATE_SUCCESS,
       case CREATE_SUCCESS:
       case FIND_BY_ID_SUCCESS:
       case UPDATE_BY_ID_SUCCESS:
+      case PATCH_BY_ID_SUCCESS:
         return {
           ...state,
           [id]: {
@@ -240,6 +243,14 @@ export default function createReducer(model, { CREATE_SUCCESS,
       case UPDATE_BY_ID_START:
       case UPDATE_BY_ID_SUCCESS:
       case UPDATE_BY_ID_ERROR:
+        return {
+          ...state,
+          byId: byIdReducer(state.byId, action)
+        };
+
+      case PATCH_BY_ID_START:
+      case PATCH_BY_ID_SUCCESS:
+      case PATCH_BY_ID_ERROR:
         return {
           ...state,
           byId: byIdReducer(state.byId, action)
